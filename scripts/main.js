@@ -1,40 +1,20 @@
-// let itemsArray = localStorage.getItem('items') ? JSON.parse(localStorage.getItem('items')) : []
-
-// let itemsArray = []
-// localStorage.setItem('items', JSON.stringify(itemsArray))
-// const data = JSON.parse(localStorage.getItem('items'))
-
 window.addEventListener("load", function() {
     var form = document.querySelector('#form')
     form.addEventListener('submit', handleFormSubmit)
-    // const text = form.input.value;
+    initializeNotes()
 });
-
-
-
-let itemsArray = localStorage.getItem('items') ? JSON.parse(localStorage.getItem('items')) : []
-
-
-localStorage.setItem('items', JSON.stringify(itemsArray))
-const data = JSON.parse(localStorage.getItem('items'))
-
 
 function handleFormSubmit(event) {
     event.preventDefault();
     var form = event.target;
     var input = form.input;
     var text = input.value;
-    itemsArray.push(input.value)
-    localStorage.setItem('items', JSON.stringify(itemsArray))
-    
+    window.activeNotesArray.push(text)
+    console.log(window.activeNotesArray)
+    localStorage.setItem('activeNotes', JSON.stringify(window.activeNotesArray))
     input.value = '';
-    // itemsArray.push(input.value)
-    // localStorage.setItem('items', JSON.stringify(itemsArray))
-    
-        var notesActiveContainer = document.querySelector('.notes__active');
-        mount(notesActiveContainer, createNote(text));
-    
-    
+    var notesActiveContainer = document.querySelector('.notes__active');
+    mount(notesActiveContainer, createNote(text));
 }
 
 function createNote(innerText) {
@@ -53,10 +33,6 @@ function createTrashButton(note) {
     trashIcon.className = 'fa fa-trash';
     trashButton.addEventListener("click", function() {
         note.parentNode.removeChild(note);
-        // localStorage.clear()
-        // while (note.firstChild) {
-        //   note.removeChild(note.firstChild)
-        // }
     })
   
     mount(trashButton, trashIcon)
@@ -78,7 +54,6 @@ function createCheckbox(note) {
     return checkbox
 }
 
-
 // Монтирование DOM элемента
 function mount(parentNode, childNode) {
     if (!parentNode || !childNode) {
@@ -96,9 +71,20 @@ function goToActive(note) {
     var notesActiveContainer = document.querySelector('.notes__active')
     mount(notesActiveContainer, note)
 }
- 
-// data.forEach(div => {
-//     mount(div)
-//   })
 
+function mountNotes(container, notes) {
+    for (var i = 0; i < notes.length; i++) {
+        mount(container, createNote(notes[i]))
+    }
+}
 
+function initializeNotes() {
+    var doneNotesArray = localStorage.getItem('doneNotes') ? JSON.parse(localStorage.getItem('doneNotes')) : []
+    var activeNotesArray = localStorage.getItem('activeNotes') ? JSON.parse(localStorage.getItem('activeNotes')) : []
+    window.doneNotesArray = doneNotesArray;
+    window.activeNotesArray = activeNotesArray;
+    var notesActiveContainer = document.querySelector('.notes__active');
+    var notesDoneContainer = document.querySelector('.notes__done');
+    mountNotes(notesDoneContainer, doneNotesArray);
+    mountNotes(notesActiveContainer, activeNotesArray);
+}
